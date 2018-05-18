@@ -2,6 +2,7 @@ package com.journey.api.itinerary;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,6 +33,7 @@ public class Itinerary {
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Column(name = "endDate")  // end is a keyword in PSQL.
     private Date end;
 
     @ManyToOne(fetch = FetchType.LAZY)

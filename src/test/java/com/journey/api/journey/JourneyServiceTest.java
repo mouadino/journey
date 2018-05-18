@@ -34,7 +34,7 @@ public class JourneyServiceTest {
 
         Mockito.when(jRepository.save(Mockito.any(Journey.class))).thenReturn(savedJourney);
 
-        srv.save(savedJourney);
+        srv.create(savedJourney);
     }
 
     @Test
@@ -43,10 +43,9 @@ public class JourneyServiceTest {
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney));
 
-        Optional<Journey> resultJourney = srv.findById(1l);
+        Journey resultJourney = srv.findById(1l);
 
-        assertThat(resultJourney.isPresent(), Matchers.is(true));
-        assertThat(resultJourney.get().getName(), Matchers.is("test"));
+        assertThat(resultJourney.getName(), Matchers.is("test"));
     }
 
     @Test
@@ -70,5 +69,4 @@ public class JourneyServiceTest {
 
         srv.addItinerary(1l, itinerary);
     }
-    
 }

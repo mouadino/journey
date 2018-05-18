@@ -1,10 +1,13 @@
 package com.journey.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
+import com.journey.api.journey.JourneyNotFoundException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ public class BaseController extends ResponseEntityExceptionHandler {
     HttpHeaders headers, 
     HttpStatus status, 
     WebRequest request) {
+      
       List<String> errors = new ArrayList<String>();
       for (FieldError error : ex.getBindingResult().getFieldErrors()) {
           errors.add(error.getField() + ": " + error.getDefaultMessage());
@@ -61,6 +65,12 @@ public class BaseController extends ResponseEntityExceptionHandler {
   
       ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
       return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  @ExceptionHandler(JourneyNotFoundException.class)
+  public ResponseEntity<Object> resourceNotFound(JourneyNotFoundException ex) {
+      ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), Collections.emptyList());
+      return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler({ Exception.class })

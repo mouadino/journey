@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,7 +29,7 @@ public class Journey {
 
     @OneToMany(
         fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
+        mappedBy = "journey",
         orphanRemoval = true)
     private List<Itinerary> itineraries = new ArrayList<>();
 

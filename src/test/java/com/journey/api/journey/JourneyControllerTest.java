@@ -11,11 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Optional;
-
 import com.journey.api.itinerary.Itinerary;
-import com.journey.api.journey.Journey;
-import com.journey.api.journey.JourneyService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +47,7 @@ public class JourneyControllerTest {
 	@Test
 	public void testGetJourney() throws Exception {
 		Journey j = new Journey("test");
-		given(jService.findById(anyLong())).willReturn(Optional.of(j));
+		given(jService.findById(anyLong())).willReturn(j);
 
 		mvc.perform(get("/api/journey/1")
 		.contentType(MediaType.APPLICATION_JSON))
@@ -63,7 +59,7 @@ public class JourneyControllerTest {
 
 	@Test
 	public void testGetUnknownJourney() throws Exception {
-		given(jService.findById(anyLong())).willReturn(Optional.empty());
+		given(jService.findById(anyLong())).willThrow(new JourneyNotFoundException(1l));
 
 		mvc.perform(get("/api/journey/1")
 		.contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +71,7 @@ public class JourneyControllerTest {
 	@Test
 	public void testCreateNewJourney() throws Exception {
 		Journey savedJourney = new Journey();
-		given(jService.save(any(Journey.class))).willReturn(savedJourney);
+		given(jService.create(any(Journey.class))).willReturn(savedJourney);
 
 		mvc.perform(post("/api/journey")
 		.content("{\"name\": \"test\"}")
@@ -83,7 +79,7 @@ public class JourneyControllerTest {
 		.andExpect(status().isCreated())
 		.andExpect(header().string("Location", is(String.format("/api/journey/%d", savedJourney.getId()))));
 
-		verify(jService).save(any());
+		verify(jService).create(any());
 	}
 
 	@Test

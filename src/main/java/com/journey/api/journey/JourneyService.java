@@ -22,22 +22,21 @@ public class JourneyService implements IJourneyService {
         this.itRepository = iRepository;
     }
 
-    public Optional<Journey> findById(long id) {
-        return jRepository.findById(id);
+    public Journey findById(long id) {
+        Optional<Journey> journey = jRepository.findById(id);
+        if (! journey.isPresent()) {
+            throw new JourneyNotFoundException(id);
+        }
+        return journey.get();
     }
 
-    public Journey save(final Journey j) {
-        logger.debug("Save new journey %s", j);
+    public Journey create(final Journey j) {
         return jRepository.save(j);
     }
 
     public Itinerary addItinerary(long journeyId, Itinerary it) throws JourneyNotFoundException {
-        Optional<Journey> journey = findById(journeyId);
-        if (! journey.isPresent()) {
-            throw new JourneyNotFoundException(journeyId);
-        }
-
-        it.setJourney(journey.get());
+        Journey journey = findById(journeyId);
+        it.setJourney(journey);
         Itinerary savedItinerary = itRepository.save(it);
         return savedItinerary;
     }

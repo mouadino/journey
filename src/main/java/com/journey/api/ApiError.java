@@ -1,6 +1,7 @@
 package com.journey.api;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -27,5 +28,13 @@ public class ApiError {
 
     public HttpStatus getStatus() {
         return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public List<String> getErrors() {
+        return Collections.unmodifiableList(errors);
     }
 }

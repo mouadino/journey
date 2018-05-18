@@ -5,6 +5,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+    generate-ddl: true
+    show_sql: true
+    format_sql: true
+    use_sql_comments: true
 
 server:
   compression:
