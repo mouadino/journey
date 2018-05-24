@@ -17,6 +17,7 @@ import com.journey.domain.journey.Journey;
 import com.journey.domain.journey.JourneyService;
 import com.journey.domain.journey.JourneyNotFoundException;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -115,5 +116,18 @@ public class JourneyControllerTest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andExpect(header().string("Location", is(String.format("/api/journey/1/itinerary/%d", savedItinerary.getId()))));
+	}
+
+	@Test
+	public void testAddItineraryWithEndLessThanStartDate() throws Exception {
+		Itinerary savedItinerary = new Itinerary();
+		given(jService.addItinerary(anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
+
+		mvc.perform(post("/api/journey/1/itinerary")
+		.content("{\"start\": \"2018-05-22\", \"end\": \"2018-05-19\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isBadRequest())
+		.andExpect(jsonPath("$.errors", Matchers.not(Matchers.empty())))
+		.andExpect(jsonPath("$.errors[0]", is("itinerary: start date must be earlier than end date. Found: May 22 2018 < May 19 2018")));
 	}
 }

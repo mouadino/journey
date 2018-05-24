@@ -19,6 +19,7 @@ import com.journey.domain.journey.Journey;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+@ValidItinerary
 @Entity
 @Table(name = "itinerary")
 public class Itinerary {
