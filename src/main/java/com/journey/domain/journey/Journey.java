@@ -1,4 +1,4 @@
-package com.journey.api.journey;
+package com.journey.domain.journey;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.journey.api.itinerary.Itinerary;
+import com.journey.domain.itinerary.Itinerary;
 
 @Entity
 @Table(name = "journey")

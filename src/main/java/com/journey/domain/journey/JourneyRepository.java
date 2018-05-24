@@ -1,4 +1,4 @@
-package com.journey.api.journey;
+package com.journey.domain.journey;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

@@ -7,15 +7,20 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.journey.api.itinerary.Itinerary;
+import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.journey.Journey;
+import com.journey.domain.journey.JourneyService;
+import com.journey.domain.journey.JourneyNotFoundException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -80,6 +85,16 @@ public class JourneyControllerTest {
 		.andExpect(header().string("Location", is(String.format("/api/journey/%d", savedJourney.getId()))));
 
 		verify(jService).create(any());
+	}
+
+	@Test
+	public void testDeleteJourney() throws Exception {
+        Mockito.doNothing().when(jService).delete(Mockito.anyLong());
+
+		mvc.perform(delete("/api/journey/1"))
+		.andExpect(status().isNoContent());
+
+		verify(jService).delete(anyLong());
 	}
 
 	@Test

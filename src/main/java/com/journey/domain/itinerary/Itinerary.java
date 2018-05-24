@@ -1,4 +1,4 @@
-package com.journey.api.itinerary;
+package com.journey.domain.itinerary;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-import com.journey.api.journey.Journey;
+import com.journey.domain.journey.Journey;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

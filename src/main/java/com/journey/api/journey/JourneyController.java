@@ -4,10 +4,10 @@ import java.net.URI;
 
 import javax.validation.Valid;
 
-import com.journey.api.itinerary.Itinerary;
+import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.journey.Journey;
+import com.journey.domain.journey.JourneyService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class JourneyController {
-    private static final Logger logger = LoggerFactory.getLogger(JourneyController.class);
 
-    private final IJourneyService svc;
+    private final JourneyService svc;
 
     @Autowired
-    public JourneyController(IJourneyService repo) {
+    public JourneyController(JourneyService repo) {
         this.svc = repo;
     }
 
@@ -43,8 +42,15 @@ public class JourneyController {
 
     @RequestMapping(value = "/journey/{journeyId}/itinerary", method = RequestMethod.POST)
     public ResponseEntity<?> addItinerary(@PathVariable long journeyId, @Valid @RequestBody Itinerary it) {
+        // TODO: Validate that start > end!
         Itinerary savedItinerary = svc.addItinerary(journeyId, it);
         URI location = URI.create(String.format("/api/journey/%d/itinerary/%d", journeyId, savedItinerary.getId()));
         return ResponseEntity.created(location).build();        
+    }
+
+    @RequestMapping(value = "journey/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@PathVariable long id) {
+        svc.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

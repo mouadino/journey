@@ -7,7 +7,7 @@ import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import com.journey.api.journey.JourneyNotFoundException;
+import com.journey.domain.journey.JourneyNotFoundException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

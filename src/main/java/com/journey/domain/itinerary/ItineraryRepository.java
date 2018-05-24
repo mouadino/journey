@@ -1,4 +1,4 @@
-package com.journey.api.itinerary;
+package com.journey.domain.itinerary;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

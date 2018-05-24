@@ -1,7 +1,7 @@
-package com.journey.api.journey;
+package com.journey.domain.journey;
 
 public class JourneyNotFoundException extends RuntimeException {
-    JourneyNotFoundException(long journeyID) {
+    public JourneyNotFoundException(long journeyID) {
         super(String.format("journey %d not found", journeyID));
     }
 }

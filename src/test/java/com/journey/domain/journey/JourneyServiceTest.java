@@ -1,12 +1,17 @@
-package com.journey.api.journey;
+package com.journey.domain.journey;
 
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.Optional;
 
-import com.journey.api.itinerary.Itinerary;
-import com.journey.api.itinerary.ItineraryRepository;
+import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.itinerary.ItineraryRepository;
+import com.journey.domain.journey.JourneyService;
+import com.journey.domain.journey.JourneyServiceImpl;
+import com.journey.domain.journey.Journey;
+import com.journey.domain.journey.JourneyNotFoundException;
+import com.journey.domain.journey.JourneyRepository;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -25,7 +30,7 @@ public class JourneyServiceTest {
         jRepository = Mockito.mock(JourneyRepository.class);
         itRepository = Mockito.mock(ItineraryRepository.class);
 
-        srv = new JourneyService(jRepository, itRepository);
+        srv = new JourneyServiceImpl(jRepository, itRepository);
     }
 
     @Test
@@ -68,5 +73,12 @@ public class JourneyServiceTest {
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenThrow(new JourneyNotFoundException(1l));
 
         srv.addItinerary(1l, itinerary);
+    }
+
+    @Test
+    public void testDeleteJourney() throws Exception {
+        Mockito.doNothing().when(jRepository).deleteById(Mockito.anyLong());
+        
+        srv.delete(1);
     }
 }
