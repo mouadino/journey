@@ -48,11 +48,11 @@ public class JourneyAPITest {
 
 	@Test
 	public void testANewlyCreatedJourneyShouldBeReturned() throws Exception {
-		MvcResult res = mvc.perform(post("/api/journey")
+		MvcResult res = mvc.perform(post("/api/journies")
 		.content("{\"name\": \"My First Journey\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
-        .andExpect(header().string("Location", Matchers.startsWith("/api/journey/")))
+        .andExpect(header().string("Location", Matchers.startsWith("/api/journies/")))
         .andReturn();
 
         String journeyURI = res.getResponse().getHeader("Location");
@@ -61,6 +61,12 @@ public class JourneyAPITest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.name", Matchers.is("My First Journey")));
+
+	    mvc.perform(get("/api/journies")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+        .andExpect(jsonPath("$", Matchers.hasSize(1)))
+        .andExpect(jsonPath("$.[0].name", Matchers.is("My First Journey")));	
 
 		mvc.perform(delete(journeyURI)).andExpect(status().isNoContent());
 	}
@@ -71,11 +77,11 @@ public class JourneyAPITest {
 		//String journeyURI = String.format("api/journey/%d", FIXTURE_JOURNEY_ID);
 
 		// FIXME: Use fixtures!
-		MvcResult res = mvc.perform(post("/api/journey")
+		MvcResult res = mvc.perform(post("/api/journies")
 		.content("{\"name\": \"My First Journey\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
-        .andExpect(header().string("Location", Matchers.startsWith("/api/journey/")))
+        .andExpect(header().string("Location", Matchers.startsWith("/api/journies/")))
         .andReturn();
 
 		String journeyURI = res.getResponse().getHeader("Location");

@@ -6,6 +6,10 @@ import com.journey.domain.itinerary.Itinerary;
 import com.journey.domain.itinerary.ItineraryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +37,10 @@ class JourneyServiceImpl implements JourneyService {
 
     public void delete(long journeyId) {
         jRepository.deleteById(journeyId);
+    }
+
+    public Page<Journey> findPaginated(int page, int size) {
+        return jRepository.findAll(PageRequest.of(page, size));
     }
 
     public Itinerary addItinerary(long journeyId, Itinerary it) throws JourneyNotFoundException {

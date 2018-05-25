@@ -3,6 +3,7 @@ package com.journey.api.journey;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -12,11 +13,13 @@ import com.journey.domain.journey.JourneyService;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,31 +56,37 @@ public class JourneyController {
         return it;
     }
 
-    @RequestMapping(value = "/journey/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/journies/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getJourney(@PathVariable long id) {
         Journey journey = svc.findById(id);
         return ResponseEntity.ok(convertToDto(journey));
     }
 
-    @RequestMapping(value = "/journey", method = RequestMethod.POST)
+    @RequestMapping(value = "/journies", method = RequestMethod.POST)
     public ResponseEntity<?> createJourney(@Valid @RequestBody JourneyDto journeyDto) {
         Journey journey = convertToEntity(journeyDto);
         Journey savedJourney = svc.create(journey);
-        URI location = URI.create(String.format("/api/journey/%d", savedJourney.getId()));
+        URI location = URI.create(String.format("/api/journies/%d", savedJourney.getId()));
         return ResponseEntity.created(location).build();        
     }
 
-    @RequestMapping(value = "/journey/{journeyId}/itinerary", method = RequestMethod.POST)
+    @RequestMapping(value = "journies/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> removeJourney(@PathVariable long id) {
+        svc.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "journies", method = RequestMethod.GET)
+    public ResponseEntity<?> listJourney(@RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+        Page<Journey> resultPage = svc.findPaginated(page.orElse(0), size.orElse(10));
+        return ResponseEntity.ok(resultPage.getContent());
+    } 
+
+    @RequestMapping(value = "/journies/{journeyId}/itinerary", method = RequestMethod.POST)
     public ResponseEntity<?> addItinerary(@PathVariable long journeyId, @Valid @RequestBody ItineraryDto itineraryDto) {
         Itinerary it = convertToEntity(itineraryDto);
         Itinerary savedItinerary = svc.addItinerary(journeyId, it);
-        URI location = URI.create(String.format("/api/journey/%d/itinerary/%d", journeyId, savedItinerary.getId()));
+        URI location = URI.create(String.format("/api/journies/%d/itinerary/%d", journeyId, savedItinerary.getId()));
         return ResponseEntity.created(location).build();        
-    }
-
-    @RequestMapping(value = "journey/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@PathVariable long id) {
-        svc.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

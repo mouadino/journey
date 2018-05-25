@@ -1,12 +1,9 @@
 package com.journey.api.journey;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import com.journey.domain.itinerary.Itinerary;
 
 import org.springframework.data.annotation.ReadOnlyProperty;
 
