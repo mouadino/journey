@@ -13,11 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 
 import com.journey.domain.journey.Journey;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 @ValidItinerary
 @Entity
@@ -28,13 +25,10 @@ public class Itinerary {
     private long id; 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @NotNull
     private Date start;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Column(name = "endDate")  // end is a keyword in PSQL.
+    @Column(name = "end_date")  // end is a keyword in PSQL.
     private Date end;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,11 +36,6 @@ public class Itinerary {
     private Journey journey;
     
     public Itinerary() {}
-
-    public Itinerary(Date start, Date end) {
-        this.start = start;
-        this.end = end;
-    }
 
     public long getId() {
         return id;

@@ -14,8 +14,9 @@ import javax.validation.Payload;
 @Constraint(validatedBy = ItineraryValidator.class)
 @Documented
 public @interface ValidItinerary {
+    // TODO: Add time in error message.
     String message () default "start date must be earlier than end date. " +
-                        "Found: ${formatter.format('%1$tb %1$te %1$tY', validatedValue.start)} < ${formatter.format('%1$tb %1$te %1$tY', validatedValue.end)}";
+                        "Found: ${formatter.format('%1$tb %1$te %1$tY', validatedValue.start)} > ${formatter.format('%1$tb %1$te %1$tY', validatedValue.end)}";
     Class<?>[] groups () default {};
     Class<? extends Payload>[] payload () default {};
 }

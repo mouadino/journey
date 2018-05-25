@@ -11,7 +11,8 @@ public class ItineraryValidator implements ConstraintValidator<ValidItinerary, I
     @Override
     public boolean isValid (Itinerary it, ConstraintValidatorContext context) {
         if (it.getEnd() != null) {
-            return it.getEnd().after(it.getStart());
+            return it.getStart().equals(it.getEnd()) 
+              || it.getStart().before(it.getEnd());
         }
         return true;
     }

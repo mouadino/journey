@@ -5,19 +5,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.journey.domain.itinerary.Itinerary;
 import com.journey.domain.journey.Journey;
-import com.journey.domain.journey.JourneyService;
 import com.journey.domain.journey.JourneyNotFoundException;
+import com.journey.domain.journey.JourneyService;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,22 +111,9 @@ public class JourneyControllerTest {
 		given(jService.addItinerary(anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
 
 		mvc.perform(post("/api/journey/1/itinerary")
-		.content("{\"start\": \"2018-05-19\", \"end\": \"2018-05-22\"}")
+		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andExpect(header().string("Location", is(String.format("/api/journey/1/itinerary/%d", savedItinerary.getId()))));
-	}
-
-	@Test
-	public void testAddItineraryWithEndLessThanStartDate() throws Exception {
-		Itinerary savedItinerary = new Itinerary();
-		given(jService.addItinerary(anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
-
-		mvc.perform(post("/api/journey/1/itinerary")
-		.content("{\"start\": \"2018-05-22\", \"end\": \"2018-05-19\"}")
-		.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isBadRequest())
-		.andExpect(jsonPath("$.errors", Matchers.not(Matchers.empty())))
-		.andExpect(jsonPath("$.errors[0]", is("itinerary: start date must be earlier than end date. Found: May 22 2018 < May 19 2018")));
 	}
 }

@@ -2,16 +2,10 @@ package com.journey.domain.journey;
 
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
 import java.util.Optional;
 
 import com.journey.domain.itinerary.Itinerary;
 import com.journey.domain.itinerary.ItineraryRepository;
-import com.journey.domain.journey.JourneyService;
-import com.journey.domain.journey.JourneyServiceImpl;
-import com.journey.domain.journey.Journey;
-import com.journey.domain.journey.JourneyNotFoundException;
-import com.journey.domain.journey.JourneyRepository;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -56,7 +50,7 @@ public class JourneyServiceTest {
     @Test
     public void testAddItineraryToExistingJourney() throws Exception {
         Journey savedJourney = new Journey("test");
-        Itinerary itinerary = new Itinerary(new Date(), new Date());
+        Itinerary itinerary = new Itinerary();
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney));
         Mockito.when(itRepository.save(Mockito.any(Itinerary.class))).thenReturn(itinerary);
@@ -68,7 +62,7 @@ public class JourneyServiceTest {
 
     @Test(expected = JourneyNotFoundException.class)
     public void testAddItineraryToUnknownJourney() throws Exception {
-        Itinerary itinerary = new Itinerary(new Date(), new Date());
+        Itinerary itinerary = new Itinerary();
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenThrow(new JourneyNotFoundException(1l));
 
