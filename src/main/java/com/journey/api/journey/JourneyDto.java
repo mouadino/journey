@@ -1,9 +1,12 @@
 package com.journey.api.journey;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.journey.domain.itinerary.Itinerary;
 
 import org.springframework.data.annotation.ReadOnlyProperty;
 
@@ -34,7 +37,9 @@ public class JourneyDto {
     }
 
     public List<ItineraryDto> getItineraries() {
-        // TODO: Sort list.
+        if (this.itineraries != null) {
+            this.itineraries.sort(((it1, it2) -> it1.getStart().compareTo(it2.getStart())));
+        }
         return this.itineraries;
     }
 

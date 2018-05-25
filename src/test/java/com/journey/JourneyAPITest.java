@@ -80,15 +80,15 @@ public class JourneyAPITest {
 
 		String journeyURI = res.getResponse().getHeader("Location");
 		String itineraryURI = String.format("%s/%s", journeyURI, "itinerary");
-		
-		mvc.perform(post(itineraryURI)
-		.content("{\"start\": \"2018-05-17T20:00Z\", \"end\": \"2018-05-19T10:00Z\"}")
-		.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isCreated())
-		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)));
 
 		mvc.perform(post(itineraryURI)
 		.content("{\"start\": \"2018-06-22T20:00Z\", \"end\": \"2018-06-23T10:00Z\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isCreated())
+		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)));
+		
+		mvc.perform(post(itineraryURI)
+		.content("{\"start\": \"2018-05-17T20:00Z\", \"end\": \"2018-05-19T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)));
