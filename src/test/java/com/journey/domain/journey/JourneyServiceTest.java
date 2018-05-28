@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 
 import com.journey.domain.itinerary.Itinerary;
-import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.itinerary.ItineraryRepository;
 
 import org.hamcrest.Matchers;
@@ -77,30 +76,23 @@ public class JourneyServiceTest {
         srv.delete(1);
     }
 
-    @Test()
-    public void testDeleteItinerary() throws Exception {
-        Journey savedJourney = new Journey("test");
-
-        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney)); 
-        Mockito.when(itRepository.delete(Mockito.any(), Mockito.anyLong())).thenReturn(1);
-
-        srv.removeItinerary(1, 2);
-    }
-
     @Test(expected = JourneyNotFoundException.class)
-    public void testDeleteItineraryWithUknownJourney() throws Exception {
-        Mockito.when(jRepository.findById(Mockito.anyLong())).thenThrow(new JourneyNotFoundException(1));
+    public void testUpdateUnknownJourney() throws Exception {
+        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        srv.removeItinerary(1, 2);
+        srv.update(1l, new Journey());
     }
 
-    @Test(expected = ItineraryNotFoundException.class)
-    public void testDeleteItineraryWithUnknownItinerary() throws Exception {
+    @Test
+    public void testUpdateJourney() throws Exception {
         Journey savedJourney = new Journey("test");
+        Journey newJourney = new Journey("test 2");
 
-        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney)); 
-        Mockito.when(itRepository.delete(Mockito.any(), Mockito.anyLong())).thenReturn(0);
+        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney));
+        Mockito.when(jRepository.save(Mockito.any())).thenReturn(newJourney);
 
-        srv.removeItinerary(1, 2);
+        Journey returnedJourney = srv.update(1l, newJourney);
+
+        assertThat(returnedJourney, Matchers.is(newJourney));
     }
 }

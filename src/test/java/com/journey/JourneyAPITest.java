@@ -3,6 +3,7 @@ package com.journey;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -66,7 +67,13 @@ public class JourneyAPITest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
         .andExpect(jsonPath("$", Matchers.hasSize(1)))
-        .andExpect(jsonPath("$.[0].name", Matchers.is("My First Journey")));	
+		.andExpect(jsonPath("$.[0].name", Matchers.is("My First Journey")));
+		
+		mvc.perform(put(journeyURI)
+		.content("{\"name\": \"My new named Journey\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.name", Matchers.is("My new named Journey")));	
 
 		mvc.perform(delete(journeyURI)).andExpect(status().isNoContent());
 	}
@@ -96,11 +103,14 @@ public class JourneyAPITest {
 
 		String firstItineraryURI = res.getResponse().getHeader("Location");
 		
-		mvc.perform(post(itineraryURI)
+		res = mvc.perform(post(itineraryURI)
 		.content("{\"start\": \"2018-05-17T20:00Z\", \"end\": \"2018-05-19T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
-		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)));
+		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)))
+		.andReturn();
+
+		String secondItineraryURI = res.getResponse().getHeader("Location");
 
         mvc.perform(get(journeyURI)
 		.contentType(MediaType.APPLICATION_JSON))
@@ -118,5 +128,19 @@ public class JourneyAPITest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.itineraries", Matchers.hasSize(1)));
+
+		String newDate = "2020-06-05T10:00Z";
+		res = mvc.perform(put(secondItineraryURI)
+		.content(String.format("{\"start\": \"2018-05-17T20:00Z\", \"end\": \"%s\"}", newDate))
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andReturn();
+
+		mvc.perform(get(journeyURI)
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.itineraries", Matchers.hasSize(1)))
+		.andExpect(jsonPath("$.itineraries[0].start", Matchers.is("2018-05-17T20:00Z")))
+		.andExpect(jsonPath("$.itineraries[0].end", Matchers.is(newDate)));
 	}
 }

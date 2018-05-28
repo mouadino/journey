@@ -20,6 +20,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
+/* This test class includes tests that are better expressed with using a real repository instead
+of a mock.
+*/
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -88,5 +91,52 @@ public class JourneyServiceIntegrationTest {
         entityManager.refresh(journey);
 
         srv.removeItinerary(journey.getId(), 10234);
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testUpdateItinerary() {
+        Journey journey = new Journey("test");
+        entityManager.persist(journey);
+        entityManager.refresh(journey);
+
+        long itineraryId = (long)entityManager.persistAndGetId(
+            Itinerary.builder(new Date())
+                     .journey(journey)
+                     .build()
+        );
+
+        Itinerary newItinerary = Itinerary.builder(new Date(2018, 05, 22))
+                                          .end(new Date(2018, 05, 30))
+                                          .journey(journey)
+                                          .build();
+
+        Itinerary persisedItinerary = srv.updateItinerary(journey.getId(), itineraryId, newItinerary);
+
+        assertThat(persisedItinerary, Matchers.is(newItinerary));
+    }
+
+    @Test(expected = ItineraryNotFoundException.class)
+    public void testUpdateItineraryWithUnknownItinerary() {
+        Journey journey = new Journey("test");
+        entityManager.persist(journey);
+        entityManager.refresh(journey);
+
+        srv.updateItinerary(journey.getId(), 10234, new Itinerary());
+    }
+
+    @Test(expected = JourneyNotFoundException.class)
+    public void testUpdateItineraryWithUnknownJourney() {
+        Journey journey = new Journey("test");
+        entityManager.persist(journey);
+        entityManager.refresh(journey);
+
+        long itineraryId = (long)entityManager.persistAndGetId(
+            Itinerary.builder(new Date())
+                     .journey(journey)
+                     .build()
+        );
+
+        srv.updateItinerary(10234, itineraryId, new Itinerary());
     }
 }

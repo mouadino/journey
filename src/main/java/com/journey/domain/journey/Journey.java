@@ -65,4 +65,14 @@ public class Journey {
         "name='" + name + '\'' +
         '}';
     }
+
+    @Override
+    public boolean equals(Object that) {
+        if (that == this) return true;
+        if (! (that instanceof Journey)) return false;
+
+        Journey thatJourney = (Journey) that;
+
+        return this.name.equals(thatJourney.name);
+    }
 }

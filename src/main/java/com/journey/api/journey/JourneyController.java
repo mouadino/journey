@@ -48,6 +48,10 @@ public class JourneyController {
         return journeyDto;
     }
 
+    private ItineraryDto convertToDto(Itinerary itinerary) {
+        return modelMapper.map(itinerary, ItineraryDto.class);
+    }
+
     private Journey convertToEntity(JourneyDto journeyDto)  {
         Journey journey = modelMapper.map(journeyDto, Journey.class);
         return journey;
@@ -72,6 +76,13 @@ public class JourneyController {
         return ResponseEntity.created(location).build();        
     }
 
+    @RequestMapping(value = "/journies/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateJourney(@PathVariable long id, @Valid @RequestBody JourneyDto journeyDto) {
+        Journey newJourney = convertToEntity(journeyDto);
+        Journey savedJourney = svc.update(id, newJourney);
+        return ResponseEntity.ok(convertToDto(savedJourney));        
+    }
+
     @RequestMapping(value = "journies/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> removeJourney(@PathVariable long id) {
         svc.delete(id);
@@ -90,6 +101,14 @@ public class JourneyController {
         Itinerary savedItinerary = svc.addItinerary(journeyId, it);
         URI location = URI.create(String.format("/api/journies/%d/itinerary/%d", journeyId, savedItinerary.getId()));
         return ResponseEntity.created(location).build();        
+    }
+
+    @RequestMapping(value = "/journies/{journeyId}/itinerary/{itineraryId}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateItinerary(@PathVariable long journeyId, @PathVariable long itineraryId, @Valid @RequestBody ItineraryDto itineraryDto) {
+        Itinerary newIt = convertToEntity(itineraryDto);
+
+        Itinerary savedItinerary = svc.updateItinerary(journeyId, itineraryId, newIt);
+        return  ResponseEntity.ok(convertToDto(savedItinerary));          
     }
 
     @RequestMapping(value = "/journies/{journeyId}/itinerary/{itineraryId}", method = RequestMethod.DELETE)

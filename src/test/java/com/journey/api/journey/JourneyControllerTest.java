@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Date;
 
 import com.journey.domain.itinerary.Itinerary;
 import com.journey.domain.itinerary.ItineraryNotFoundException;
@@ -191,5 +193,58 @@ public class JourneyControllerTest {
 		.andExpect(status().isNotFound());
 
 		verify(jService).removeItinerary(55, 2);
+	}
+
+	@Test
+	public void testUpdateJourney() throws Exception {
+		Journey savedJourney = new Journey("test 2");
+		given(jService.update(anyLong(), any(Journey.class))).willReturn(savedJourney);
+
+		mvc.perform(put("/api/journies/1")
+		.content("{\"name\": \"test 2\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.name", is("test 2")));		
+	}
+
+	@Test
+	public void testUpdateUnknownJourney() throws Exception {
+		given(jService.update(anyLong(), any(Journey.class))).willThrow(new JourneyNotFoundException(1));
+
+		mvc.perform(put("/api/journies/1")
+		.content("{\"name\": \"test 2\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void testUpdateItinerary() throws Exception {
+		Itinerary savedItinerary = Itinerary.builder(new Date()).build();
+		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
+
+		mvc.perform(put("/api/journies/1/itinerary/2")
+		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk());
+	}
+
+	@Test
+	public void testUpdateItineraryOfUnknownJourney() throws Exception {
+		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willThrow(new JourneyNotFoundException(1));
+
+		mvc.perform(put("/api/journies/1/itinerary/2")
+		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void testUpdateUknownItinerary() throws Exception {
+		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willThrow(new ItineraryNotFoundException(1));
+
+		mvc.perform(put("/api/journies/1/itinerary/2")
+		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
 	}
 }

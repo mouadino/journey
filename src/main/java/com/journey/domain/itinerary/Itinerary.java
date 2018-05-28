@@ -64,7 +64,19 @@ public class Itinerary {
 
     public void setJourney(Journey j) {
         this.journey = j;
-   }
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        if (that == this) return true;
+        if (! (that instanceof Itinerary)) return false;
+
+        Itinerary thatItinerary = (Itinerary) that;
+
+        return this.start.equals(thatItinerary.start) &&
+            this.end.equals(thatItinerary.end) &&
+            this.journey.equals(thatItinerary.journey);
+    }
 
     @Override
     public String toString() {

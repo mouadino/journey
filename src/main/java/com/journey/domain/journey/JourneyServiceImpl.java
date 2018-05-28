@@ -1,5 +1,7 @@
 package com.journey.domain.journey;
 
+import java.util.Optional;
+
 import com.journey.domain.itinerary.Itinerary;
 import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.itinerary.ItineraryRepository;
@@ -30,6 +32,15 @@ class JourneyServiceImpl implements JourneyService {
         return jRepository.save(j);
     }
 
+    @Transactional
+    public Journey update(long journeyId, final Journey newJourney) {
+        Journey journey = findById(journeyId);
+
+        journey.setName(newJourney.getName());
+
+        return jRepository.save(journey);
+    }
+
     public void delete(long journeyId) {
         jRepository.deleteById(journeyId);
     }
@@ -43,6 +54,18 @@ class JourneyServiceImpl implements JourneyService {
         it.setJourney(journey);
         Itinerary savedItinerary = itRepository.save(it);
         return savedItinerary;
+    }
+
+    public Itinerary updateItinerary(long journeyId, long itineraryId, Itinerary newItinerary) throws JourneyNotFoundException, ItineraryNotFoundException {
+        Journey journey = findById(journeyId);
+        
+        Itinerary itinerary = itRepository.findByIdAndJourney(itineraryId, journey)
+                                          .orElseThrow(() -> new ItineraryNotFoundException(itineraryId));
+
+        itinerary.setStart(newItinerary.getStart());
+        itinerary.setEnd(newItinerary.getEnd());
+
+        return itRepository.save(itinerary);
     }
 
     @Transactional
