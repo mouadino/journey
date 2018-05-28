@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 
 import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.itinerary.ItineraryRepository;
 
 import org.hamcrest.Matchers;
@@ -74,5 +75,32 @@ public class JourneyServiceTest {
         Mockito.doNothing().when(jRepository).deleteById(Mockito.anyLong());
         
         srv.delete(1);
+    }
+
+    @Test()
+    public void testDeleteItinerary() throws Exception {
+        Journey savedJourney = new Journey("test");
+
+        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney)); 
+        Mockito.when(itRepository.delete(Mockito.any(), Mockito.anyLong())).thenReturn(1);
+
+        srv.removeItinerary(1, 2);
+    }
+
+    @Test(expected = JourneyNotFoundException.class)
+    public void testDeleteItineraryWithUknownJourney() throws Exception {
+        Mockito.when(jRepository.findById(Mockito.anyLong())).thenThrow(new JourneyNotFoundException(1));
+
+        srv.removeItinerary(1, 2);
+    }
+
+    @Test(expected = ItineraryNotFoundException.class)
+    public void testDeleteItineraryWithUnknownItinerary() throws Exception {
+        Journey savedJourney = new Journey("test");
+
+        Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney)); 
+        Mockito.when(itRepository.delete(Mockito.any(), Mockito.anyLong())).thenReturn(0);
+
+        srv.removeItinerary(1, 2);
     }
 }

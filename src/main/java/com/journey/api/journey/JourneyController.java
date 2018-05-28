@@ -8,7 +8,9 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.journey.Journey;
+import com.journey.domain.journey.JourneyNotFoundException;
 import com.journey.domain.journey.JourneyService;
 
 import org.modelmapper.ModelMapper;
@@ -88,5 +90,11 @@ public class JourneyController {
         Itinerary savedItinerary = svc.addItinerary(journeyId, it);
         URI location = URI.create(String.format("/api/journies/%d/itinerary/%d", journeyId, savedItinerary.getId()));
         return ResponseEntity.created(location).build();        
+    }
+
+    @RequestMapping(value = "/journies/{journeyId}/itinerary/{itineraryId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> removeItinerary(@PathVariable long journeyId, @PathVariable long itineraryId) {
+        svc.removeItinerary(journeyId, itineraryId);
+        return ResponseEntity.noContent().build();        
     }
 }

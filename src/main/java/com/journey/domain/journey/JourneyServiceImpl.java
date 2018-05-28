@@ -1,16 +1,14 @@
 package com.journey.domain.journey;
 
-import java.util.Optional;
-
 import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.itinerary.ItineraryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 class JourneyServiceImpl implements JourneyService {
@@ -24,11 +22,8 @@ class JourneyServiceImpl implements JourneyService {
     }
 
     public Journey findById(long id) {
-        Optional<Journey> journey = jRepository.findById(id);
-        if (! journey.isPresent()) {
-            throw new JourneyNotFoundException(id);
-        }
-        return journey.get();
+        Journey journey = jRepository.findById(id).orElseThrow(() -> new JourneyNotFoundException(id));
+        return journey;
     }
 
     public Journey create(final Journey j) {
@@ -48,5 +43,14 @@ class JourneyServiceImpl implements JourneyService {
         it.setJourney(journey);
         Itinerary savedItinerary = itRepository.save(it);
         return savedItinerary;
+    }
+
+    @Transactional
+    public void removeItinerary(long journeyId, long itineraryId) throws JourneyNotFoundException, ItineraryNotFoundException {
+        Journey journey = findById(journeyId);
+        int deletedCount = itRepository.delete(journey, itineraryId);
+        if (deletedCount != 1) {
+            throw new ItineraryNotFoundException(itineraryId);
+        }
     }
 }

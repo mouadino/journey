@@ -1,12 +1,13 @@
 package com.journey.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.journey.JourneyNotFoundException;
 
 import org.slf4j.Logger;
@@ -25,9 +26,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class BaseController extends ResponseEntityExceptionHandler {
+public class ErrorHandlingController extends ResponseEntityExceptionHandler {
 
-  static final private Logger logger = LoggerFactory.getLogger(BaseController.class);
+  static final private Logger logger = LoggerFactory.getLogger(ErrorHandlingController.class);
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -56,7 +57,7 @@ public class BaseController extends ResponseEntityExceptionHandler {
         // FIXME: How to get human readable messages?
         String message = ex.getLocalizedMessage();
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, message);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return errorResponse(apiError);
   }
 
   @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
@@ -67,7 +68,7 @@ public class BaseController extends ResponseEntityExceptionHandler {
       logger.debug("invalid argument types in handler: %s", ex);
   
       ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, error);
-      return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+      return errorResponse(apiError);
   }
 
   @ExceptionHandler({ ConstraintViolationException.class })
@@ -82,21 +83,24 @@ public class BaseController extends ResponseEntityExceptionHandler {
       logger.debug("contraint violation in handler: %s", ex);
 
       ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errors);
-      return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+      return errorResponse(apiError);
   }
 
-  @ExceptionHandler(JourneyNotFoundException.class)
-  public ResponseEntity<Object> resourceNotFound(JourneyNotFoundException ex) {
-      ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, Collections.emptyList());
-      return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.NOT_FOUND);
+  @ExceptionHandler({JourneyNotFoundException.class, ItineraryNotFoundException.class})
+  public ResponseEntity<Object> resourceNotFound(RuntimeException ex) {
+     List<String> errors = Arrays.asList(ex.getLocalizedMessage());
+     ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errors);
+     return errorResponse(apiError);
   }
 
   @ExceptionHandler({ Exception.class })
   public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
       ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "error occurred");
+      logger.error("error caught: %s", ex);
+      return errorResponse(apiError);
+  }
 
-      logger.debug("unknwown error in handler: %s", ex);
-
-      return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+  public ResponseEntity<Object> errorResponse(ApiError apiError) {
+    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 }

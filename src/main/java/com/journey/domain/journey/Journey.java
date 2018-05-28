@@ -29,9 +29,13 @@ public class Journey {
         orphanRemoval = true)
     private List<Itinerary> itineraries = new ArrayList<>();
 
-    public Journey() {}
+    public Journey() {
+        super();
+    }
 
     public Journey(String name) {
+        super();
+        
         this.name = name;
     }
 

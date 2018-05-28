@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.journey.domain.itinerary.Itinerary;
+import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.journey.Journey;
 import com.journey.domain.journey.JourneyNotFoundException;
 import com.journey.domain.journey.JourneyService;
@@ -136,7 +137,7 @@ public class JourneyControllerTest {
 		mvc.perform(delete("/api/journies/1"))
 		.andExpect(status().isNoContent());
 
-		verify(jService).delete(anyLong());
+		verify(jService).delete(1);
 	}
 
 	@Test
@@ -157,5 +158,38 @@ public class JourneyControllerTest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
 		.andExpect(header().string("Location", is(String.format("/api/journies/1/itinerary/%d", savedItinerary.getId()))));
+	}
+
+	@Test
+	public void testDeleteItineraryFromJourney() throws Exception {
+		Mockito.doNothing().when(jService).removeItinerary(anyLong(), anyLong());
+
+		mvc.perform(delete("/api/journies/55/itinerary/2")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNoContent());
+
+		verify(jService).removeItinerary(55, 2);
+	}
+
+	@Test
+	public void testDeleteItineraryFromUnknownJourney() throws Exception {
+		Mockito.doThrow(new JourneyNotFoundException(55)).when(jService).removeItinerary(anyLong(), anyLong());
+
+		mvc.perform(delete("/api/journies/55/itinerary/2")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
+
+		verify(jService).removeItinerary(55, 2);
+	}
+
+	@Test
+	public void testDeleteItineraryFromUnknownItinerary() throws Exception {
+		Mockito.doThrow(new ItineraryNotFoundException(2)).when(jService).removeItinerary(anyLong(), anyLong());
+
+		mvc.perform(delete("/api/journies/55/itinerary/2")
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
+
+		verify(jService).removeItinerary(55, 2);
 	}
 }

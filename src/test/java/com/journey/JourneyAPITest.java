@@ -33,7 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class JourneyAPITest {
 
 	// FIXME: Same ID used in test/resources/fixtures/*.sql.
-	// private final static long FIXTURE_JOURNEY_ID = 1234;
+	//private final static long FIXTURE_JOURNEY_ID = 1234;
 
 	private MockMvc mvc;
 
@@ -87,11 +87,14 @@ public class JourneyAPITest {
 		String journeyURI = res.getResponse().getHeader("Location");
 		String itineraryURI = String.format("%s/%s", journeyURI, "itinerary");
 
-		mvc.perform(post(itineraryURI)
+		res = mvc.perform(post(itineraryURI)
 		.content("{\"start\": \"2018-06-22T20:00Z\", \"end\": \"2018-06-23T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
-		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)));
+		.andExpect(header().string("Location", Matchers.startsWith(itineraryURI)))
+		.andReturn();
+
+		String firstItineraryURI = res.getResponse().getHeader("Location");
 		
 		mvc.perform(post(itineraryURI)
 		.content("{\"start\": \"2018-05-17T20:00Z\", \"end\": \"2018-05-19T10:00Z\"}")
@@ -107,5 +110,13 @@ public class JourneyAPITest {
 		.andExpect(jsonPath("$.itineraries[0].end", Matchers.is("2018-05-19T10:00Z")))
 		.andExpect(jsonPath("$.itineraries[1].start", Matchers.is("2018-06-22T20:00Z")))
 		.andExpect(jsonPath("$.itineraries[1].end", Matchers.is("2018-06-23T10:00Z")));
+
+		mvc.perform(delete(firstItineraryURI))
+		.andExpect(status().isNoContent());
+
+		mvc.perform(get(journeyURI)
+		.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.itineraries", Matchers.hasSize(1)));
 	}
 }
