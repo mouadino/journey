@@ -33,8 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Sql(scripts = "classpath:truncate.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 public class JourneyAPITest {
 
-	// FIXME: Same ID used in test/resources/fixtures/*.sql.
-	//private final static long FIXTURE_JOURNEY_ID = 1234;
+	private final static long FIXTURE_JOURNEY_ID = 1234;
 
 	private MockMvc mvc;
 
@@ -81,20 +80,11 @@ public class JourneyAPITest {
 	@Test
 	@Sql(executionPhase = ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:fixtures/journies.sql")
 	public void testAddingItineraryShouldBeReturnedInJourney() throws Exception {
-		//String journeyURI = String.format("api/journey/%d", FIXTURE_JOURNEY_ID);
+		String journeyURI = String.format("/api/journies/%d", FIXTURE_JOURNEY_ID);
 
-		// FIXME: Use fixtures!
-		MvcResult res = mvc.perform(post("/api/journies")
-		.content("{\"name\": \"My First Journey\"}")
-		.contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isCreated())
-        .andExpect(header().string("Location", Matchers.startsWith("/api/journies/")))
-        .andReturn();
+		String itineraryURI = String.format("%s/%s", journeyURI, "itineraries");
 
-		String journeyURI = res.getResponse().getHeader("Location");
-		String itineraryURI = String.format("%s/%s", journeyURI, "itinerary");
-
-		res = mvc.perform(post(itineraryURI)
+		MvcResult res = mvc.perform(post(itineraryURI)
 		.content("{\"start\": \"2018-06-22T20:00Z\", \"end\": \"2018-06-23T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())

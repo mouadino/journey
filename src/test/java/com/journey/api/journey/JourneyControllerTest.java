@@ -155,18 +155,18 @@ public class JourneyControllerTest {
 		Itinerary savedItinerary = new Itinerary();
 		given(jService.addItinerary(anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
 
-		mvc.perform(post("/api/journies/1/itinerary")
+		mvc.perform(post("/api/journies/1/itineraries")
 		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isCreated())
-		.andExpect(header().string("Location", is(String.format("/api/journies/1/itinerary/%d", savedItinerary.getId()))));
+		.andExpect(header().string("Location", is(String.format("/api/journies/1/itineraries/%d", savedItinerary.getId()))));
 	}
 
 	@Test
 	public void testDeleteItineraryFromJourney() throws Exception {
 		Mockito.doNothing().when(jService).removeItinerary(anyLong(), anyLong());
 
-		mvc.perform(delete("/api/journies/55/itinerary/2")
+		mvc.perform(delete("/api/journies/55/itineraries/2")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNoContent());
 
@@ -177,7 +177,7 @@ public class JourneyControllerTest {
 	public void testDeleteItineraryFromUnknownJourney() throws Exception {
 		Mockito.doThrow(new JourneyNotFoundException(55)).when(jService).removeItinerary(anyLong(), anyLong());
 
-		mvc.perform(delete("/api/journies/55/itinerary/2")
+		mvc.perform(delete("/api/journies/55/itineraries/2")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound());
 
@@ -188,7 +188,7 @@ public class JourneyControllerTest {
 	public void testDeleteItineraryFromUnknownItinerary() throws Exception {
 		Mockito.doThrow(new ItineraryNotFoundException(2)).when(jService).removeItinerary(anyLong(), anyLong());
 
-		mvc.perform(delete("/api/journies/55/itinerary/2")
+		mvc.perform(delete("/api/journies/55/itineraries/2")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound());
 
@@ -222,7 +222,7 @@ public class JourneyControllerTest {
 		Itinerary savedItinerary = Itinerary.builder(new Date()).build();
 		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
 
-		mvc.perform(put("/api/journies/1/itinerary/2")
+		mvc.perform(put("/api/journies/1/itineraries/2")
 		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk());
@@ -232,7 +232,7 @@ public class JourneyControllerTest {
 	public void testUpdateItineraryOfUnknownJourney() throws Exception {
 		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willThrow(new JourneyNotFoundException(1));
 
-		mvc.perform(put("/api/journies/1/itinerary/2")
+		mvc.perform(put("/api/journies/1/itineraries/2")
 		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound());
@@ -242,7 +242,7 @@ public class JourneyControllerTest {
 	public void testUpdateUknownItinerary() throws Exception {
 		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willThrow(new ItineraryNotFoundException(1));
 
-		mvc.perform(put("/api/journies/1/itinerary/2")
+		mvc.perform(put("/api/journies/1/itineraries/2")
 		.content("{\"start\": \"2018-05-19T06:30Z\", \"end\": \"2018-05-22T10:00Z\"}")
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isNotFound());

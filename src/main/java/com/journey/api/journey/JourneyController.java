@@ -95,15 +95,15 @@ public class JourneyController {
         return ResponseEntity.ok(resultPage.getContent());
     } 
 
-    @RequestMapping(value = "/journies/{journeyId}/itinerary", method = RequestMethod.POST)
+    @RequestMapping(value = "/journies/{journeyId}/itineraries", method = RequestMethod.POST)
     public ResponseEntity<?> addItinerary(@PathVariable long journeyId, @Valid @RequestBody ItineraryDto itineraryDto) {
         Itinerary it = convertToEntity(itineraryDto);
         Itinerary savedItinerary = svc.addItinerary(journeyId, it);
-        URI location = URI.create(String.format("/api/journies/%d/itinerary/%d", journeyId, savedItinerary.getId()));
+        URI location = URI.create(String.format("/api/journies/%d/itineraries/%d", journeyId, savedItinerary.getId()));
         return ResponseEntity.created(location).build();        
     }
 
-    @RequestMapping(value = "/journies/{journeyId}/itinerary/{itineraryId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/journies/{journeyId}/itineraries/{itineraryId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateItinerary(@PathVariable long journeyId, @PathVariable long itineraryId, @Valid @RequestBody ItineraryDto itineraryDto) {
         Itinerary newIt = convertToEntity(itineraryDto);
 
@@ -111,7 +111,7 @@ public class JourneyController {
         return  ResponseEntity.ok(convertToDto(savedItinerary));          
     }
 
-    @RequestMapping(value = "/journies/{journeyId}/itinerary/{itineraryId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/journies/{journeyId}/itineraries/{itineraryId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> removeItinerary(@PathVariable long journeyId, @PathVariable long itineraryId) {
         svc.removeItinerary(journeyId, itineraryId);
         return ResponseEntity.noContent().build();        
