@@ -116,8 +116,10 @@ public class JourneyAPITest {
 		.contentType(MediaType.APPLICATION_JSON))
 		.andExpect(status().isOk())
 		.andExpect(jsonPath("$.itineraries", Matchers.hasSize(2)))
+		.andExpect(jsonPath("$.itineraries[0].id", Matchers.notNullValue()))
 		.andExpect(jsonPath("$.itineraries[0].start", Matchers.is("2018-05-17T20:00Z")))
 		.andExpect(jsonPath("$.itineraries[0].end", Matchers.is("2018-05-19T10:00Z")))
+		.andExpect(jsonPath("$.itineraries[1].id", Matchers.notNullValue()))
 		.andExpect(jsonPath("$.itineraries[1].start", Matchers.is("2018-06-22T20:00Z")))
 		.andExpect(jsonPath("$.itineraries[1].end", Matchers.is("2018-06-23T10:00Z")));
 

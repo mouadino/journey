@@ -7,12 +7,18 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 class ItineraryDto {
+    private long id;
+
     @NotNull
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm'Z'")
     private Date start;
 
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm'Z'")
     private Date end;
+
+    public long getId() {
+        return id;
+    }
  
     public Date getStart(){
        return start;
@@ -28,6 +34,5 @@ class ItineraryDto {
   
      public void setEnd(Date end) {
          this.end = end;
-         
      }
 }
