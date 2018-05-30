@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import com.journey.domain.itinerary.ItineraryAlreadyExistsException;
 import com.journey.domain.itinerary.ItineraryNotFoundException;
 import com.journey.domain.journey.JourneyNotFoundException;
 
@@ -16,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -86,11 +89,25 @@ public class ErrorHandlingController extends ResponseEntityExceptionHandler {
       return errorResponse(apiError);
   }
 
+  @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+  public ResponseEntity<Object> resourceLocked(OptimisticLockException ex) {
+    List<String> errors = Arrays.asList(ex.getLocalizedMessage());
+    ApiError apiError = new ApiError(HttpStatus.CONFLICT, errors);
+    return errorResponse(apiError);
+ }
+
   @ExceptionHandler({JourneyNotFoundException.class, ItineraryNotFoundException.class})
   public ResponseEntity<Object> resourceNotFound(RuntimeException ex) {
      List<String> errors = Arrays.asList(ex.getLocalizedMessage());
      ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errors);
      return errorResponse(apiError);
+  }
+
+  @ExceptionHandler({ItineraryAlreadyExistsException.class})
+  public ResponseEntity<Object> businessError(RuntimeException ex) {
+    List<String> errors = Arrays.asList(ex.getLocalizedMessage());
+    ApiError apiError = new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, errors);
+    return errorResponse(apiError); 
   }
 
   @ExceptionHandler({ Exception.class })

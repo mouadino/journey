@@ -1,6 +1,7 @@
 package com.journey.domain.itinerary;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.validation.constraints.NotNull;
 
 import com.journey.domain.journey.Journey;
 
+// TODO: Add unique constraint for start/end/journey.
+// TODO: Should I model itinerary as value object?
 @ValidItinerary
 @Entity
 @Table(name = "itinerary")
@@ -26,16 +29,15 @@ public class Itinerary {
     private long id; 
 
     @Temporal(TemporalType.TIMESTAMP)
-    @NotNull
+    @Column(nullable = false)
     private Date start;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_date")  // end is a keyword in PSQL.
     private Date end;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "journey_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "journey_id", insertable = false, updatable = false)
     private Journey journey;
     
     public Itinerary() {
@@ -62,6 +64,10 @@ public class Itinerary {
         this.end = end;
     }
 
+    public Journey getJourney() {
+        return journey;
+    }
+
     public void setJourney(Journey j) {
         this.journey = j;
     }
@@ -73,16 +79,24 @@ public class Itinerary {
 
         Itinerary thatItinerary = (Itinerary) that;
 
-        return this.start.equals(thatItinerary.start) &&
-            this.end.equals(thatItinerary.end) &&
-            this.journey.equals(thatItinerary.journey);
+        return 
+            this.id == thatItinerary.id
+            && this.start.equals(thatItinerary.start)
+            && this.end.equals(thatItinerary.end)
+            && this.journey.equals(thatItinerary.journey);
+    }
+
+    @Override
+    public int hashCode() {
+         return Objects.hash(id, start, end, journey);
     }
 
     @Override
     public String toString() {
         return "Itinerary{" +
-        "start=" + start +
-        ", end=" + end +
+        "id= " + id +
+        " , start=" + start +
+        " , end=" + end +
         "}";
     }
 
