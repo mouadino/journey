@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 
 import com.journey.domain.itinerary.Itinerary;
-import com.journey.domain.itinerary.ItineraryRepository;
+import com.journey.infrastructure.journey.JourneyRepository;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -15,16 +15,14 @@ import org.mockito.Mockito;
 public class JourneyServiceTest {
 
     private JourneyRepository jRepository;
-    private ItineraryRepository itRepository;
 
     private JourneyService srv;
 
     @Before
     public void setUp() {
         jRepository = Mockito.mock(JourneyRepository.class);
-        itRepository = Mockito.mock(ItineraryRepository.class);
 
-        srv = new JourneyServiceImpl(jRepository, itRepository);
+        srv = new JourneyServiceImpl(jRepository);
     }
 
     @Test
@@ -53,7 +51,7 @@ public class JourneyServiceTest {
         Itinerary itinerary = new Itinerary();
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney));
-        Mockito.when(itRepository.save(Mockito.any(Itinerary.class))).thenReturn(itinerary);
+        Mockito.when(jRepository.save(Mockito.any(Journey.class))).thenReturn(savedJourney);
 
         Itinerary resultItinerary = srv.addItinerary(1l, itinerary);
 

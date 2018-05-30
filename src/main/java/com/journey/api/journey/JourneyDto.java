@@ -5,16 +5,15 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.annotation.ReadOnlyProperty;
-
 public class JourneyDto {
-    @ReadOnlyProperty
     private long id;
 
-    @ReadOnlyProperty
     @NotBlank
     @NotNull
     private String name;
+
+    private long version;
+
     private List<ItineraryDto> itineraries;
 
     public long getId() {
@@ -31,6 +30,14 @@ public class JourneyDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     public List<ItineraryDto> getItineraries() {
