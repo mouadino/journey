@@ -17,104 +17,37 @@ import javax.validation.constraints.NotNull;
 
 import com.journey.domain.journey.Journey;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor @AllArgsConstructor @EqualsAndHashCode(of = {"start", "end", "journey"}) @ToString @Builder
 @ValidItinerary
 @Entity
 @Table(name = "itinerary")
 public class Itinerary {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; 
 
+    @Getter @Setter
     @Temporal(TemporalType.TIMESTAMP)
     @NotNull
     private Date start;
 
+    @Getter @Setter
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_date")  // end is a keyword in PSQL.
     private Date end;
 
+    @Getter @Setter
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "journey_id")
     private Journey journey;
-    
-    public Itinerary() {
-        super();
-    }
-
-    public long getId() {
-        return id;
-    }
-    
-    public Date getStart() {
-        return start;
-    }
-
-    public Date getEnd() {
-        return end;
-    }
-
-    public void setStart(Date start) {
-        this.start = start;
-    }
-
-    public void setEnd(Date end) {
-        this.end = end;
-    }
-
-    public void setJourney(Journey j) {
-        this.journey = j;
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == this) return true;
-        if (! (that instanceof Itinerary)) return false;
-
-        Itinerary thatItinerary = (Itinerary) that;
-
-        return this.start.equals(thatItinerary.start) &&
-            this.end.equals(thatItinerary.end) &&
-            this.journey.equals(thatItinerary.journey);
-    }
-
-    @Override
-    public String toString() {
-        return "Itinerary{" +
-        "start=" + start +
-        ", end=" + end +
-        "}";
-    }
-
-    public static Builder builder(Date start) {
-        return new Builder(start);
-    }
-
-    public static class Builder {
-        private Date start;
-        private Date end;
-        private Journey journey;
-
-        public Builder(Date start) {
-            this.start = start;
-        }
-
-        public Builder end(Date end) {
-            this.end = end;
-            return this;
-        }
-
-        public Builder journey(Journey journey) {
-            this.journey = journey;
-            return this;
-        }
-
-        public Itinerary build() {
-            Itinerary it = new Itinerary();
-            it.setStart(this.start);
-            it.setEnd(this.end);
-            it.setJourney(this.journey);
-            return it;
-        }
-    }
 }

@@ -14,13 +14,22 @@ import javax.persistence.Table;
 
 import com.journey.domain.itinerary.Itinerary;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@NoArgsConstructor @EqualsAndHashCode(of = {"id", "name"}) @ToString
 @Entity
 @Table(name = "journey")
 public class Journey {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Getter @Setter
     private String name;
 
     @OneToMany(
@@ -29,50 +38,11 @@ public class Journey {
         orphanRemoval = true)
     private List<Itinerary> itineraries = new ArrayList<>();
 
-    public Journey() {
-        super();
-    }
-
     public Journey(String name) {
-        super();
-        
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setName(String name) {
         this.name = name;
     }
 
     public List<Itinerary> getItineraries() {
         return  Collections.unmodifiableList(itineraries);
-    }
-
-    public void setItineraries(List<Itinerary> itineraries) {
-        this.itineraries = itineraries;
-    }
-
-    @Override
-    public String toString() {
-        return "Journey{" +
-        "name='" + name + '\'' +
-        '}';
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == this) return true;
-        if (! (that instanceof Journey)) return false;
-
-        Journey thatJourney = (Journey) that;
-
-        return this.name.equals(thatJourney.name);
     }
 }

@@ -152,7 +152,7 @@ public class JourneyControllerTest {
 
 	@Test
 	public void testAddItineraryToJourney() throws Exception {
-		Itinerary savedItinerary = new Itinerary();
+		Itinerary savedItinerary = Itinerary.builder().build();
 		given(jService.addItinerary(anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
 
 		mvc.perform(post("/api/journies/1/itineraries")
@@ -219,7 +219,7 @@ public class JourneyControllerTest {
 
 	@Test
 	public void testUpdateItinerary() throws Exception {
-		Itinerary savedItinerary = Itinerary.builder(new Date()).build();
+		Itinerary savedItinerary = Itinerary.builder().start(new Date()).build();
 		given(jService.updateItinerary(anyLong(), anyLong(), any(Itinerary.class))).willReturn(savedItinerary);
 
 		mvc.perform(put("/api/journies/1/itineraries/2")

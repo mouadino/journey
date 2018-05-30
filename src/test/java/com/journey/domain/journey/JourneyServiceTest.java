@@ -50,7 +50,7 @@ public class JourneyServiceTest {
     @Test
     public void testAddItineraryToExistingJourney() throws Exception {
         Journey savedJourney = new Journey("test");
-        Itinerary itinerary = new Itinerary();
+        Itinerary itinerary = Itinerary.builder().build();
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedJourney));
         Mockito.when(itRepository.save(Mockito.any(Itinerary.class))).thenReturn(itinerary);
@@ -62,7 +62,7 @@ public class JourneyServiceTest {
 
     @Test(expected = JourneyNotFoundException.class)
     public void testAddItineraryToUnknownJourney() throws Exception {
-        Itinerary itinerary = new Itinerary();
+        Itinerary itinerary = Itinerary.builder().build();
 
         Mockito.when(jRepository.findById(Mockito.anyLong())).thenThrow(new JourneyNotFoundException(1l));
 

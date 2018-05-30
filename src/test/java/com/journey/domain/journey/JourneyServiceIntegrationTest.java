@@ -56,7 +56,8 @@ public class JourneyServiceIntegrationTest {
         entityManager.refresh(journey);
 
         long itineraryId = (long)entityManager.persistAndGetId(
-            Itinerary.builder(new Date())
+            Itinerary.builder()
+                     .start(new Date())
                      .journey(journey)
                      .build()
         );
@@ -76,7 +77,8 @@ public class JourneyServiceIntegrationTest {
         entityManager.refresh(journey);
 
         long itineraryId = (long)entityManager.persistAndGetId(
-            Itinerary.builder(new Date())
+            Itinerary.builder()
+                     .start(new Date())
                      .journey(journey)
                      .build()
         );
@@ -101,12 +103,14 @@ public class JourneyServiceIntegrationTest {
         entityManager.refresh(journey);
 
         long itineraryId = (long)entityManager.persistAndGetId(
-            Itinerary.builder(new Date())
+            Itinerary.builder()
+                     .start(new Date())
                      .journey(journey)
                      .build()
         );
 
-        Itinerary newItinerary = Itinerary.builder(new Date(2018, 05, 22))
+        Itinerary newItinerary = Itinerary.builder()
+                                          .start(new Date(2018, 05, 22))
                                           .end(new Date(2018, 05, 30))
                                           .journey(journey)
                                           .build();
@@ -122,7 +126,7 @@ public class JourneyServiceIntegrationTest {
         entityManager.persist(journey);
         entityManager.refresh(journey);
 
-        srv.updateItinerary(journey.getId(), 10234, new Itinerary());
+        srv.updateItinerary(journey.getId(), 10234, Itinerary.builder().build());
     }
 
     @Test(expected = JourneyNotFoundException.class)
@@ -132,11 +136,12 @@ public class JourneyServiceIntegrationTest {
         entityManager.refresh(journey);
 
         long itineraryId = (long)entityManager.persistAndGetId(
-            Itinerary.builder(new Date())
+            Itinerary.builder()
+                     .start(new Date())
                      .journey(journey)
                      .build()
         );
 
-        srv.updateItinerary(10234, itineraryId, new Itinerary());
+        srv.updateItinerary(10234, itineraryId, Itinerary.builder().build());
     }
 }

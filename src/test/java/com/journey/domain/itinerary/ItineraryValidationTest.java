@@ -32,7 +32,8 @@ public class ItineraryValidationTest {
     @Test
     public void ItineraryWithStartDateEqualsToEndDate_shouldBeValid() {
         Date now = new Date();
-        Itinerary it = Itinerary.builder(now)
+        Itinerary it = Itinerary.builder()
+                                .start(now)
                                 .end(now)
                                 .journey(dummyJourney)
                                 .build();
@@ -44,7 +45,8 @@ public class ItineraryValidationTest {
     @Test
     public void ItineraryWithNoEndDate_shouldBeValid() {
         Date now = new Date();
-        Itinerary it = Itinerary.builder(now)
+        Itinerary it = Itinerary.builder()
+                                .start(now)
                                 .journey(dummyJourney)
                                 .build();
 
@@ -55,7 +57,8 @@ public class ItineraryValidationTest {
     @Test
     @SuppressWarnings("deprecation")
     public void ItineraryWithStartDateLessThanEndDate_shouldBeValid() {
-        Itinerary it = Itinerary.builder(new Date(2018, 5, 22))
+        Itinerary it = Itinerary.builder()
+                                .start(new Date(2018, 5, 22))
                                 .end(new Date(2018, 5, 24))
                                 .journey(dummyJourney)
                                 .build();
@@ -67,7 +70,7 @@ public class ItineraryValidationTest {
     @Test
     @SuppressWarnings("deprecation")
     public void ItineraryWithStartDateBiggerThanEndDate_shouldNotBeValid() {
-        Itinerary it = new Itinerary();
+        Itinerary it = Itinerary.builder().build();
         it.setStart(new Date(2018, 5, 31));
         it.setEnd(new Date(2018, 5, 24));
 
